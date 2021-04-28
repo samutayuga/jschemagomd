@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "fruitlistingid",
+  "type": "object",
+  "title": "List of Fruit and its taste",
+  "description": "This is manage the list of fruit and its taste",
+  "required": ["fruits"],
+  "properties": {
+    "fruits": {
+      "$id": "/properties/fruits",
+      "title": "Fruit Listing",
+      "description": "Fruit Listing",
+      "type": "array",
+      "items": {
+        "$id": "/properties/fruits/fruititem",
+        "title": "Fruit single record",
+        "description": "Each of item represent the name and taste of a single fruit",
+        "type": "object",
+        "required": ["name", "taste"],
+        "properties": {
+          "name": {
+            "$id": "fruitname",
+            "title": "Fruit name",
+            "description": "The name of fruit",
+            "type": "string"
+          },
+          "taste": {
+            "$id": "fruittaste",
+            "title": "Fruit taste",
+            "description": "How this fruit tastes",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+---
+jschemagomd:
+  schema-file-pattern: "^\\w+\\.schema\\.json$"
+  payload-file-pattern: "^%s_payload\\.json$"
+  image-file-pattern: "^%s\\w+\\.png$"

@@ -1,0 +1,241 @@
+@startuml
+title Json Schema to Markdown Converter
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam roundcorner 10
+skinparam nodesep 10
+skinparam ranksep 20
+skinparam ComponentPadding 10
+skinparam ParticipantPadding 10
+skinparam BoxPadding 10
+skinparam class {
+BackgroundColor<< WORKER >> YellowGreen
+BackgroundColor<< EXECUTOR >> Cyan
+BackgroundColor Lightgrey
+ArrowColor SeaGreen
+BorderColor Black
+
+}
+skinparam note {
+BackgroundColor<<CustomerServices>> Pink
+BorderColor<<CustomerServices>> Pink
+BackgroundColor<<ProductServices>> LightGreen
+BorderColor<<ProductServices>> YellowGreen
+BackgroundColor<<FileDescriptor>> Gold
+BorderColor<<FileDescriptor>> Golden
+FontColor<<FileDescriptor>> Black
+BackgroundColor<<AppDescriptor>> YellowGreen
+BorderColor<<AppDescriptor>> Red
+FontColor<<AppDescriptor>> Black
+BackgroundColor<<FileCodec>> LightBlue
+BorderColor<<FileCodec>> Red
+FontColor<<FileCodec>> Black
+BackgroundColor<<AppCodec>> Orange
+BorderColor<<AppCodec>> Cyan
+FontColor<<AppCodec>> Black
+}
+skinparam node {
+
+borderColor Green
+backgroundColor lightblue
+borderColor<< CustomNoemplate >> black
+backgroundColor<< CustomNotemplate >> lightgreen
+
+borderColor<< RFMService >> lightgreen
+backgroundColor<< RFMService >> orange
+
+borderColor<< RAMService >> black
+backgroundColor<< RAMService >> purple
+fontcolor<< RAMService>> white
+
+borderColor<< UI >> black
+backgroundColor<< UI >> magenta
+FontColor<< fdescriptor >> Black
+borderColor<< fdescriptor >> black
+backgroundColor<< fdescriptor >> lightgreen
+FontColor<< appdescriptor >> Black
+borderColor<< appdescriptor >> black
+backgroundColor<< appdescriptor >> yellow
+borderColor<< Codec >> pink
+backgroundColor<< Codec >> cyan
+}
+
+skinparam component {
+borderColor<< Schema2Md >>  Red
+backgroundColor<< Schema2Md >>  purple
+fontcolor<< Schema2Md >> white
+
+borderColor black
+backgroundColor lightblue
+
+FontColor Black
+borderColor lightgreen
+backgroundColor YellowGreen
+}
+skinparam rectangle{
+borderColor<< Service >> Red
+backgroundColor<< Service >> orange
+
+borderColor<< Codec >> pink
+backgroundColor<< Codec >> cyan
+FontColor<< fdescriptor >> White
+borderColor<< fdescriptor >> black
+backgroundColor<< fdescriptor >> green
+
+FontColor<< appdescriptor >> Black
+borderColor<< appdescriptor >> black
+backgroundColor<< appdescriptor >> lightgreen
+
+borderColor black
+backgroundColor lightblue
+
+FontColor Black
+borderColor<< customer >> lightgreen
+backgroundColor<< customer >> YellowGreen
+}
+skinparam card {
+
+borderColor<< Customtemplate >> black
+backgroundColor<< Customtemplate >> lightblue
+borderColor<< CustomNotemplate >> black
+backgroundColor<< CustomNotemplate >> lightgreen
+borderColor<< Customer >> black
+backgroundColor<< Customer >> Lightgrey
+}
+
+skinparam file{
+borderColor<< JsonSchema >> pink
+backgroundColor<< JsonSchema >> lightgreen
+borderColor<< MD >> black
+backgroundColor<< MD >> Orange
+borderColor<< JsonFile >> black
+backgroundColor<< JsonFile >> lightblue
+borderColor<< GUI >> black
+backgroundColor<< GUI >> pink
+}
+
+
+
+file AnyJsonSchema<< JsonSchema >> [
+    {
+    ...
+    "$schema": "http://json-schema.org/draft-04/schema#"
+    ...
+    "title":"any title",
+    ...
+    "description":"any desc",
+    ---
+    "required": "[field1]",
+    ...
+    "properties": 
+                 {
+                     "field1" : 
+                        {
+                           "title": "field1title",
+                           "description": "field1description",
+                           "type": "[array|object|integer|string|bool]",
+                           "required": "optional, applicable if the type is array or object",
+                           "properties": "optional, applicable if the type is object",
+                           "pattern": "applicable if the type is string",
+                           "examples": "applicable if the type is string",
+                           "maximum": "applicable if the type is integer",
+                           "minimum": "applicable if the type is integer",
+                           "default": "applicable if the type is integer"
+                        }
+                     "field2" :
+                        {
+                           "title": "field2title",
+                           "description": "field2description",
+                           "type": "[array|object|integer|string|bool]",
+                        }
+
+                 }
+    }
+
+]
+left to right direction
+
+note left of AnyJsonSchema <<CustomerServices>>
+Example:
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "fruitlistingid",
+    "type": "object",
+    "title": "List of Fruit and its taste",
+    "description": "This is manage the list of fruit and its taste",
+    "required": [
+        "fruits"
+    ],
+    "properties": {
+        "fruits": {
+            "$id": "/properties/fruits",
+            "title": "Fruit Listing",
+            "description": "Fruit Listing",
+            "type": "array",
+            "items": {
+                "$id": "/properties/fruits/fruititem",
+                "title": "Fruit single record",
+                "description": "name and taste of a fruit",
+                "type": "object",
+                "required": ["name","taste"],
+                "properties": 
+                {
+                    "name": {
+                        "$id": "fruitname",
+                        "title": "Fruit name",
+                        "description": "Fruit name",
+                        "type": "string",
+                    }
+                    "taste": {
+                        "$id": "fruittaste",
+                        "title": "Fruit taste",
+                        "description": "Fruit taste",
+                        "type": "string",
+                    }
+                }
+
+
+            }
+
+        }
+    }
+}
+end note
+component JsonSchemaGoMd<< Schema2Md >> {
+
+}
+file GUIScreenShot<< GUI >> {
+
+}
+file JsonPayload<< JsonFile >>{
+
+}
+file fruitlistingmd<< MD >> [
+    List of Fruit and its taste
+    ...
+    Overview
+    ...
+    //TODO: include the picture
+    ...
+    Json schema
+    <jsonschematext>
+    ...
+    Properties
+    ...
+    **fruits**(`array`, `Required`)
+    `Fruit Listing`
+    ...
+    _Elements_
+    **name**(`string`,`Required`)
+    `Fruit name`
+    **Taste**(`string`,`Required`)
+    `Fruit taste`
+
+    Json Payload Example
+]
+
+AnyJsonSchema --> JsonSchemaGoMd
+JsonSchemaGoMd --> fruitlistingmd
+JsonPayload --> JsonSchemaGoMd
+GUIScreenShot --> JsonSchemaGoMd
+@enduml

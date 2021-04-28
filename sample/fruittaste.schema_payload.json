@@ -1,0 +1,12 @@
+{
+  "fruits": [
+    {
+      "name": "jack fruit",
+      "taste": "sweet"
+    },
+    {
+      "name": "green apple",
+      "taste": "sour"
+    }
+  ]
+}

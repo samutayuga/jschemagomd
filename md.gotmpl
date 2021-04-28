@@ -1,0 +1,204 @@
+{{/*1.Templates*/}}
+{{- define "DisplayAdditionalProperties" -}}
+{{ with . }} 
+{{ range $k,$l:= . }}
+{{ if eq "pattern" $k }}
+
+{{- $k }} 
+
+```regexp
+{{ $l }} 
+```
+{{ else }}
+{{ $k }} : {{ $l }}
+{{ end }}
+
+{{- end -}}  
+{{- end -}}
+{{- end -}}
+{{/*2. Display Additional Properties start*/}}
+{{- define "DisplayAdditionalPropertiesInTable" -}}
+{{- with . -}}
+{{- if gt (. | len ) 1 -}}
+{{- with . -}}
+{{- range $k,$l:= . -}}
+{{- $k -}} : {{- $l -}} 
+{{- end -}}
+{{- end -}}
+{{- else -}}
+{{- range $k,$l:= . -}}
+{{-  $k -}}: {{- $l -}}
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- end -}}
+{{/*3. Display Additional Properties End*/}}
+{{- define "DisplayRequired"}}
+{{- with . }}
+{{- if eq true .Required }}
+(`{{- .JFType }}`, `Required`)
+{{- else }}
+(`{{- .JFType }}`, `Optional`)
+{{- end }}
+{{- end }}
+{{- end }}
+{{/*End Template*/}}
+
+{{- /*4. Beginning of DisplayChildrenTable template **/ -}}
+{{- define "DisplayChildrenTable" -}}
+|Field|Name|Type|Required|Description|
+|---|---|---|---|:---:|
+{{ with . -}}
+{{- range $x,$y:= . -}}
+|{{ $x }}|{{ with $y }}{{ .JFName }}|{{ .JFType }}|{{ .Required }}|{{- template "DisplayAdditionalPropertiesInTable" .AdditionalProperties -}}{{ end }}|
+{{ end }}
+{{ if .RelationConstraints }}
+{{ range $i,$j:= .RelationConstraints }}
+{{ $i }}
+{{ with $j }}
+{{ range $val := $j }}
+        * {{ $val }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{- end -}}
+{{- end -}}
+{{- /* End of template DisplayChildrenTable*/ -}}
+
+{{/*5. Beginning of DisplayChildrenList template **/}}
+{{- define "DisplayChildrenList" }}
+{{- with . }}
+{{ if or (eq .JFType "array") (eq .JFType "object" )  }}
+{{ if eq .JFType "array" }}
+Array _Elements_
+
+>{{ .SubFieldDescription }}
+{{- else }}
+Object  _Properties_
+{{- end }}
+
+{{ range $a,$b := .SubField }}
+{{ with $a }}
+* **{{ $a }}**
+{{- with $b }}
+{{- template "DisplayRequired" . }}
+{{- if eq "array" .JFType }}
+Array _Elements_
+
+>{{ .SubFieldDescription }}
+{{ template "DisplayChildrenTable" .SubField -}}
+{{- end }}
+
+{{ if gt ( .JFDescription | len ) 0 }}
+`{{ .JFDescription }}`
+{{- end }}
+{{ if eq "object" .JFType }}
+Object _Properties_
+
+{{ template "DisplaySubFields" .SubField -}}
+
+{{- end }}
+ {{ template "DisplayAdditionalProperties" .AdditionalProperties -}}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{- end }}
+{{- end }}
+{{- /* End of template DisplayChildrenList*/ -}}
+
+{{ define "DisplaySubFields" }}
+|Field|Type|Required|Description|
+|---|---|---|---|
+{{ with . -}}
+{{- range $i,$j:=. -}}
+|{{ $i }}|{{ with $j }}{{ .JFType }}|{{ .Required }}|{{ .JFDescription }}{{ end }}|
+{{ end }}
+{{ end }}
+{{- range $i,$j:=. -}}
+>{{ $i }}
+{{ template "DisplayAdditionalProperties" .AdditionalProperties -}}
+{{ end }}
+{{ end }}
+{{/* Beginning of the output */}}
+{{- /* Change the title accordingly in the markdown produced */ -}}
+
+#   {{ .SchemaTitle }}
+{{ .SchemaDesc }}
+## Overview
+//TODO: change to correct screen shot
+{{/* Changes should be made in the markdown file created */}}
+{{ with .Images }}
+{{ range $i,$v:= . }}
+![${pageTitle}^{{ $v }}]({{ $v }} "{{$i}}")
+{{ end }}
+{{ end }}
+##  Json Schema
+
+```yaml
+{{ .SchemaDisplay }}
+```
+{{/*Start definition*/}}
+{{ if .AllDefinitions }}
+## Definition
+{{ range $k,$v:= .AllDefinitions }}
+**{{ $k -}}**
+{{- with $v -}}
+{{- template "DisplayRequired" . }}
+{{ if gt (.JFDescription | len) 0 }}
+`{{ .JFDescription }}`
+{{ end }}
+{{ template "DisplaySubFields" .SubField -}}
+{{ if .RelationConstraints }}
+Must have
+{{- range $i,$j:= .RelationConstraints }}
+**{{- $i }}**
+{{ with $j }}
+{{ range $val := $j }}
+{{ with $val }}
+{{ with index . "required" }}
+{{ if gt ( . | len) 0 }}
+* {{ index . 0}}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+
+{{ end }}
+{{ end }}
+{{ end }}
+{{/*End definition*/}}
+
+{{ if .AllFields }}
+## Properties
+{{ range $key,$val := .AllFields }}
+**{{ $key }}**
+{{- with $val  }}
+{{- if eq true .Required }}
+(`{{ .JFType }}`, `Required`)
+{{- else }}
+(`{{ .JFType }}`, `Optional`)
+{{- end }}
+
+
+{{ if gt ( .JFDescription | len ) 0 }}
+`{{ .JFDescription }}`
+{{- end }}
+
+{{ template "DisplayChildrenList" . }}
+{{ template "DisplayAdditionalProperties" .AdditionalProperties }}
+{{ end }}
+{{ end }}
+{{ end }}
+
+
+## Json Payload Example
+```yaml
+{{ .JSONPayload }}
+```
+{{/*End of the output*/}}
