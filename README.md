@@ -165,3 +165,18 @@ fruittaste.md
 fruittaste.schema_greenapple.png
 fruittaste.schema_jackfruit.png
 ```
+
+# Development
+
+`To clone the source code`
+
+```bash
+go get github.com/samutayuga/jschemagomd
+```
+
+`Build`
+
+```bash
+cd github.com/samutayuga/jschemagomd
+go build -o jschemagomd.exe .
+```
